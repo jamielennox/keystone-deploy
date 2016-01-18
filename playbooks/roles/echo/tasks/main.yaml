@@ -18,8 +18,26 @@
   with_items:
     - echo
 
-- name: deploy an echo wsgi script
+- name: create conf directory
+  file:
+    path=/etc/echo
+    state=directory
+    owner=www-data
+    group=www-data
+    mode=0755
+
+- name: deploy echo configuration
   template:
+    src=echo.conf
+    dest=/etc/echo/echo.conf
+    owner=www-data
+    group=www-data
+    mode=0400
+  tags:
+    - config
+
+- name: copy echo wsgi script
+  copy:
     src=echo.py
     dest=/var/echo/echo.py
     owner=www-data
@@ -35,6 +53,7 @@
   with_items:
     - pycrypto
     - python-memcached
+    - oslo.log
     - six  # workaround for debian wheezy?
 
 - name: install python projects
